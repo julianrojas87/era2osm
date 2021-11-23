@@ -1,2 +1,2 @@
 # era2osm
-Script to transform ERA (virtual) triples to the OSM model for routing purposes
+Script to transform ERA KG (virtual) triples to the OSM model for routing purposes
