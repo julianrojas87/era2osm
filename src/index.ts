@@ -11,7 +11,7 @@ import { OPNetElements, SoLNetElementLocation, SoLNetElementConnection } from '.
 const SPARQL: string = "https://linked.ec-dataplatform.eu/sparql?"
     + "default-graph-uri=http://era.europa.eu/knowledge-graph&query=";
 
-const countries: string[] = ['BEL'];
+const countries: string[] = Config.Covered_countries;
 
 async function run() {
     const quads: Readable[] = [];
