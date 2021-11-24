@@ -1,3 +1,15 @@
+export const ListOfCountries = encodeURIComponent(`
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+    PREFIX era: <http://data.europa.eu/949/>
+    CONSTRUCT {
+        ?country a skos:Concept.
+    } WHERE {
+        SELECT DISTINCT ?country WHERE {
+            ?op a era:OperationalPoint;
+                era:inCountry ?country.
+        }
+    }`);
+
 export const OPNetElements = (country: string): string => {
     return encodeURIComponent(`
     PREFIX era: <http://data.europa.eu/949/>
@@ -13,7 +25,7 @@ export const OPNetElements = (country: string): string => {
             ^era:elementPart [ era:hasImplementation ?OP ].
 
         ?OP a era:OperationalPoint;
-            era:inCountry eu-country:${country};
+            era:inCountry <${country}>;
             wgs:location [ 
             geosparql:asWKT ?wkt;
         ].
@@ -37,7 +49,7 @@ export const OPNetElements = (country: string): string => {
     }`);
 }
 
-export const SoLNetElementLocation = (country: string): string =>{
+export const SoLNetElementLocation = (country: string): string => {
     return encodeURIComponent(`
     PREFIX geosparql: <http://www.opengis.net/ont/geosparql#>
     PREFIX era: <http://data.europa.eu/949/>
@@ -47,7 +59,7 @@ export const SoLNetElementLocation = (country: string): string =>{
         ?solNe geosparql:asWKT ?wkt.
     } WHERE {
         ?SOL a era:SectionOfLine;
-            era:inCountry eu-country:${country};
+            era:inCountry <${country}>;
             era:hasAbstraction [ era:elementPart ?solNe ];
             era:opStart ?inOP;
             era:opEnd ?outOP.
@@ -66,7 +78,7 @@ export const SoLNetElementLocation = (country: string): string =>{
     }`);
 }
 
-export const SoLNetElementConnection = (country: string): string =>{
+export const SoLNetElementConnection = (country: string): string => {
     return encodeURIComponent(`
     PREFIX era: <http://data.europa.eu/949/>
     PREFIX geosparql: <http://www.opengis.net/ont/geosparql#>
@@ -85,7 +97,7 @@ export const SoLNetElementConnection = (country: string): string =>{
             ^era:elementPart [ era:hasImplementation ?SoL ].
 
         ?SoL a era:SectionOfLine;
-            era:inCountry eu-country:${country};
+            era:inCountry <${country}>;
             era:opStart|era:opEnd ?OP.
 
         VALUES ?navAB { era-nv:AB era-nv:Both }

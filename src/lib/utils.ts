@@ -8,6 +8,6 @@ export async function* mergeStreams(streams: Readable[]) {
     }
 }
 
-export function map2json(map: Map<string, number>): string {
+export function map2json(map: Map<number, string>): string {
     return JSON.stringify([...map]);
 }

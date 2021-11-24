@@ -1,7 +1,7 @@
 import { Transform } from 'stream';
-import { createCB } from 'xmlbuilder2';
+import { createCB, fragmentCB } from 'xmlbuilder2';
 import { parse as wktParse } from 'wellknown';
-import { OSMNode, OSMWay } from '../types/types';
+import { OSMNode, OSMWay, OSMBuilderOptions } from '../types/types';
 import { XMLBuilderCB } from 'xmlbuilder2/lib/interfaces';
 import { Quad } from '@rdfjs/types';
 
@@ -15,18 +15,25 @@ export class ERA2OSM extends Transform {
     private wayIdMap: Map<string, number> = new Map();
     private nodeIdMap: Map<string, number>;
 
-    constructor(map: Map<string, number>) {
+    constructor(options: OSMBuilderOptions) {
         super({ objectMode: true });
 
-        this.xml = createCB({
-            prettyPrint: true,
-            data: (text: string) => this.push(text)
-        });
+        if (options.header) {
+            this.xml = createCB({
+                prettyPrint: true,
+                data: (text: string) => this.push(text)
+            });
 
-        this.nodeIdMap = map;
+            this.xml.dec({ "encoding": "UTF-8" });
+            this.xml.ele('osm', { 'version': '0.6', 'generator': 'osmium/1.8.0' });
+        } else {
+            this.xml = fragmentCB({
+                prettyPrint: true,
+                data: (text: string) => this.push(text)
+            });
+        }
 
-        this.xml.dec({ "encoding": "UTF-8" });
-        this.xml.ele('osm', { 'version': '0.6', 'generator': 'osmium/1.8.0' });
+        this.nodeIdMap = options.nodeMap;
     }
 
     _transform(quad: Quad, encoding: string, done: Function) {
@@ -63,7 +70,7 @@ export class ERA2OSM extends Transform {
     }
 
     private getNumericId(uri: string, map: Map<string, number>): number {
-        if(map.has(uri)) {
+        if (map.has(uri)) {
             return map.get(uri)!;
         } else {
             const id = map.size + 1;
@@ -74,10 +81,5 @@ export class ERA2OSM extends Transform {
 
     private emitXMLElement(element: OSMNode | OSMWay): void {
         this.xml.ele(element);
-    }
-
-    _flush(done: Function) {
-        this.xml.up().end();
-        done();
     }
 }

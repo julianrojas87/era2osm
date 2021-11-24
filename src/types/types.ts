@@ -1,3 +1,8 @@
+export interface OSMBuilderOptions {
+    header: boolean,
+    nodeMap: Map<string, number>
+}
+
 export type OSMNode = {
     node: {
         '@id': number,
