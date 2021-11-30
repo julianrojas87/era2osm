@@ -1,11 +1,11 @@
 export interface OSMBuilderOptions {
     header: boolean,
-    nodeMap: Map<string, number>
+    nodeMap: Map<string, MapObject>
 }
 
 export type OSMNode = {
     node: {
-        '@id': number,
+        '@id': string,
         '@version': number,
         '@timestamp': string,
         '@lat': number,
@@ -15,10 +15,16 @@ export type OSMNode = {
 
 export type OSMWay = {
     way: {
-        '@id': number,
+        '@id': string,
         '@version': number,
         '@timestamp': string,
-        nd: Array<{ '@ref': number }>,
+        nd: Array<{ '@ref': string }>,
         tag: { '@k': string, '@v': string }
     }
+}
+
+export type MapObject = {
+    id: string,
+    lngLat?: [number, number],
+    length?: number
 }

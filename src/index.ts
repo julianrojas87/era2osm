@@ -11,11 +11,12 @@ import {
     SoLNetElementLocation,
     SoLNetElementConnection
 } from './lib/queries';
+import { MapObject } from './types/types';
 
 async function run(): Promise<void> {
     const SPARQL: string = Config.SPARQL_endpoint;
-    const nodeMap: Map<string, number> = new Map();
-    const countries: string[] = await fetchCountries();
+    const nodeMap: Map<string, MapObject> = new Map();
+    const countries: string[] = await fetchCountries();/*Config.Covered_countries;*/
 
     const output = createWriteStream(Config.OSM_output, 'utf-8');
 
@@ -35,7 +36,11 @@ async function run(): Promise<void> {
     output.write('</osm>');
     output.close();
     writeFile(Config.MapId_output,
-        map2json(new Map(Array.from(nodeMap, entry => [entry[1], entry[0]]))), 'utf8', () => {
+        map2json(new Map(Array.from(nodeMap, entry => {
+            const obj: MapObject = { id: entry[0], lngLat: entry[1].lngLat };
+            if(entry[1].length) obj.length = entry[1].length;
+            return [entry[1].id, obj];
+        }))), 'utf8', () => {
             console.log(`Conversion finished successfully (converted ${nodeMap.size} topology entities)`);
     });
 }

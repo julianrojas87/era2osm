@@ -27,8 +27,8 @@ export const OPNetElements = (country: string): string => {
         ?OP a era:OperationalPoint;
             era:inCountry <${country}>;
             wgs:location [ 
-            geosparql:asWKT ?wkt;
-        ].
+                geosparql:asWKT ?wkt;
+            ].
 
         VALUES ?navAB { era-nv:AB era-nv:Both }
         VALUES ?navBA { era-nv:BA era-nv:Both }
@@ -86,7 +86,8 @@ export const SoLNetElementConnection = (country: string): string => {
     PREFIX era-nv: <http://data.europa.eu/949/concepts/navigabilities/>
     PREFIX eu-country: <http://publications.europa.eu/resource/authority/country/>
     CONSTRUCT {
-        ?solne era:linkedTo ?opne.
+        ?solne era:linkedTo ?opne;
+            era:length ?length.
     } WHERE {
         ?opne a era:NetElement;
             ^era:elementPart [ era:hasImplementation ?OP ].
@@ -94,6 +95,7 @@ export const SoLNetElementConnection = (country: string): string => {
         ?OP a era:OperationalPoint.
 
         ?solne a era:NetElement;
+            era:length ?length;
             ^era:elementPart [ era:hasImplementation ?SoL ].
 
         ?SoL a era:SectionOfLine;
