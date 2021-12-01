@@ -16,7 +16,7 @@ import { MapObject } from './types/types';
 async function run(): Promise<void> {
     const SPARQL: string = Config.SPARQL_endpoint;
     const nodeMap: Map<string, MapObject> = new Map();
-    const countries: string[] = await fetchCountries();/*Config.Covered_countries;*/
+    const countries: string[] = await fetchCountries();/*Config.Covered_countries*/;
 
     const output = createWriteStream(Config.OSM_output, 'utf-8');
 
@@ -38,7 +38,7 @@ async function run(): Promise<void> {
     writeFile(Config.MapId_output,
         map2json(new Map(Array.from(nodeMap, entry => {
             const obj: MapObject = { id: entry[0], lngLat: entry[1].lngLat };
-            if(entry[1].length) obj.length = entry[1].length;
+            if(entry[1].length || entry[1].length === 0) obj.length = entry[1].length;
             return [entry[1].id, obj];
         }))), 'utf8', () => {
             console.log(`Conversion finished successfully (converted ${nodeMap.size} topology entities)`);
