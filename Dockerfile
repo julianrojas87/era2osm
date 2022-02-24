@@ -38,9 +38,9 @@ WORKDIR /opt/osrm-data
 COPY --from=ERA2OSM /opt/era2osm/era_osm.xml .
 COPY --from=ERA2OSM /opt/era2osm/era2osm_map.json .
 # Pre-process and import data into OSRM
-RUN osrm-extract -p /opt/car.lua /opt/osrm-data/era_osm.xml && \
-    osrm-partition /opt/osrm-data/era_osm.xml.osrm && \
-    osrm-customize /opt/osrm-data/era_osm.xml.osrm
+RUN osrm-extract -p /opt/car.lua /opt/osrm-data/era_osm.xml >1.log 2>&1 \
+    && osrm-partition /opt/osrm-data/era_osm.xml.osrm \
+    && osrm-customize /opt/osrm-data/era_osm.xml.osrm
 # Expose OSRM HTTP port
 EXPOSE 5000
 # Setup container's entrypoint script
