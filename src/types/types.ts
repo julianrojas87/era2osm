@@ -26,5 +26,10 @@ export type OSMWay = {
 export type MapObject = {
     id: string,
     lngLat?: [number, number],
-    length?: number
+    length?: number,
+    impl?: string,
+    implType?: string,
+    trackId?: string,
+    label?: string,
+    opType?: string
 }

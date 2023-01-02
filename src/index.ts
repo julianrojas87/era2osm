@@ -37,7 +37,15 @@ async function run(): Promise<void> {
     output.close();
     writeFile(Config.MapId_output,
         map2json(new Map(Array.from(nodeMap, entry => {
-            const obj: MapObject = { id: entry[0], lngLat: entry[1].lngLat };
+            const obj: MapObject = { 
+                id: entry[0], 
+                lngLat: entry[1].lngLat,
+                impl: entry[1].impl,
+                implType: entry[1].implType,
+                trackId: entry[1].trackId,
+                label: entry[1].label,
+                opType: entry[1].opType
+            };
             if (entry[1].length || entry[1].length === 0) obj.length = entry[1].length;
             return [entry[1].id, obj];
         }))), 'utf8', () => {

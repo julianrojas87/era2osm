@@ -3,7 +3,9 @@ export const ListOfCountries = encodeURIComponent(`
     PREFIX era: <http://data.europa.eu/949/>
     CONSTRUCT {
         ?country a skos:Concept.
-    } WHERE {
+    }
+    FROM <http://data.europa.eu/949/graph/rinf>
+    WHERE {
         SELECT DISTINCT ?country WHERE {
             ?op a era:OperationalPoint;
                 era:inCountry ?country.
@@ -13,23 +15,35 @@ export const ListOfCountries = encodeURIComponent(`
 export const OPNetElements = (country: string): string => {
     return encodeURIComponent(`
     PREFIX era: <http://data.europa.eu/949/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX geosparql: <http://www.opengis.net/ont/geosparql#>
     PREFIX wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-    PREFIX era-nv: <http://data.europa.eu/949/concepts/navigabilities/>
+    PREFIX era-nv: <http://data.europa.eu/949/concepts/navigabilities/rinf/>
     PREFIX eu-country: <http://publications.europa.eu/resource/authority/country/>
     CONSTRUCT {
         ?opne geosparql:asWKT ?wkt;
-            era:linkedTo ?nextNe.
-    } WHERE {
+            era:linkedTo ?nextNe;
+            era:length ?length;
+            era:hasImplementation ?OP;
+            era:implementationType era:OperationalPoint;
+            rdfs:label ?opLabel;
+            skos:prefLabel ?opType.
+    } 
+    FROM <http://data.europa.eu/949/graph/rinf>
+    WHERE {
         ?opne a era:NetElement;
             ^era:elementPart [ era:hasImplementation ?OP ].
 
+        OPTIONAL { ?opne era:length ?length }
+
         ?OP a era:OperationalPoint;
+            rdfs:label ?opLabel;
+            era:opType ?opType;
             era:inCountry <${country}>;
             wgs:location [ 
                 geosparql:asWKT ?wkt;
             ].
-
+        
         VALUES ?navAB { era-nv:AB era-nv:Both }
         VALUES ?navBA { era-nv:BA era-nv:Both }
 
@@ -57,8 +71,11 @@ export const SoLNetElementLocation = (country: string): string => {
     PREFIX eu-country: <http://publications.europa.eu/resource/authority/country/>
     CONSTRUCT {
         ?solNe geosparql:asWKT ?wkt.
-    } WHERE {
+    }
+    FROM <http://data.europa.eu/949/graph/rinf>
+    WHERE {
         ?SOL a era:SectionOfLine;
+            era:solNature ?solNature;
             era:inCountry <${country}>;
             era:hasAbstraction [ era:elementPart ?solNe ];
             era:opStart ?inOP;
@@ -83,20 +100,29 @@ export const SoLNetElementConnection = (country: string): string => {
     PREFIX era: <http://data.europa.eu/949/>
     PREFIX geosparql: <http://www.opengis.net/ont/geosparql#>
     PREFIX wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-    PREFIX era-nv: <http://data.europa.eu/949/concepts/navigabilities/>
+    PREFIX era-nv: <http://data.europa.eu/949/concepts/navigabilities/rinf/>
     PREFIX eu-country: <http://publications.europa.eu/resource/authority/country/>
     CONSTRUCT {
         ?solne era:linkedTo ?opne;
-            era:length ?length.
-    } WHERE {
+            era:length ?length;
+            era:hasImplementation ?track;
+            era:implementationType era:Track;
+            era:trackId ?trackLabel.
+    } 
+    FROM <http://data.europa.eu/949/graph/rinf>
+    WHERE {
         ?opne a era:NetElement;
             ^era:elementPart [ era:hasImplementation ?OP ].
 
-        ?OP a era:OperationalPoint.
+        ?OP a era:OperationalPoint;
+            era:opType ?opType.
 
         ?solne a era:NetElement;
             era:length ?length;
+            era:hasImplementation ?track;
             ^era:elementPart [ era:hasImplementation ?SoL ].
+
+        ?track era:trackId ?trackLabel.
 
         ?SoL a era:SectionOfLine;
             era:inCountry <${country}>;

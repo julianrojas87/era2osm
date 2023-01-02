@@ -9,6 +9,11 @@ export class ERA2OSM extends Transform {
 
     readonly LINKEDTO: string = "http://data.europa.eu/949/linkedTo";
     readonly LENGTH: string = "http://data.europa.eu/949/length";
+    readonly IMPL: string = "http://data.europa.eu/949/hasImplementation";
+    readonly IMPLTYPE: string = "http://data.europa.eu/949/implementationType";
+    readonly TRACKID: string = "http://data.europa.eu/949/trackId";
+    readonly LABEL: string = "http://www.w3.org/2000/01/rdf-schema#label";
+    readonly PREFLABEL: string = "http://www.w3.org/2004/02/skos/core#prefLabel";
     readonly ASWKT: string = "http://www.opengis.net/ont/geosparql#asWKT";
     readonly timestamp: string = "2021-09-06T17:01:27Z";
 
@@ -39,22 +44,25 @@ export class ERA2OSM extends Transform {
 
     _transform(quad: Quad, encoding: string, done: Function) {
         if (quad.predicate.value === this.ASWKT) {
-            const [lon, lat] = wktParse(quad.object.value)!.coordinates;
-            if (typeof lat === 'number' && typeof lon === 'number') {
-                // Emit XML node
-                this.emitXMLElement({
-                    node: {
-                        '@id': this.getNumericId(quad.subject.value, this.nodeIdMap),
-                        '@version': 1,
-                        '@timestamp': this.timestamp,
-                        '@lat': lat,
-                        '@lon': lon
-                    }
-                });
-                // Store geo information in the ID map
-                this.nodeIdMap.get(quad.subject.value)!['lngLat'] = [lon, lat];
+            const geoObject = wktParse(quad.object.value)!;
+            if ("coordinates" in geoObject) {
+                const [lon, lat] = geoObject.coordinates;
+                if (typeof lat === 'number' && typeof lon === 'number') {
+                    // Emit XML node
+                    this.emitXMLElement({
+                        node: {
+                            '@id': this.getNumericId(quad.subject.value, this.nodeIdMap),
+                            '@version': 1,
+                            '@timestamp': this.timestamp,
+                            '@lat': lat,
+                            '@lon': lon
+                        }
+                    });
+                    // Store geo information in the ID map
+                    this.nodeIdMap.get(quad.subject.value)!['lngLat'] = [lon, lat];
+                }
             }
-        } else if(quad.predicate.value === this.LENGTH) {
+        } else if (quad.predicate.value === this.LENGTH) {
             // Make sure the node exists in ID map
             this.getNumericId(quad.subject.value, this.nodeIdMap);
             // Store length information in the ID map
@@ -73,7 +81,33 @@ export class ERA2OSM extends Transform {
                     tag: { '@k': 'highway', '@v': 'unclassified' }
                 }
             });
+        } else if(quad.predicate.value === this.IMPL) {
+            // Make sure the node exists in ID map
+            this.getNumericId(quad.subject.value, this.nodeIdMap);
+            // Store implementation URI in the ID map
+            this.nodeIdMap.get(quad.subject.value)!['impl'] = quad.object.value;
+        } else if(quad.predicate.value === this.IMPLTYPE) {
+            // Make sure the node exists in ID map
+            this.getNumericId(quad.subject.value, this.nodeIdMap);
+            // Store implementation type URI in the ID map
+            this.nodeIdMap.get(quad.subject.value)!['implType'] = quad.object.value;
+        } else if(quad.predicate.value === this.TRACKID) {
+            // Make sure the node exists in ID map
+            this.getNumericId(quad.subject.value, this.nodeIdMap);
+            // Store Track ID label in the ID map
+            this.nodeIdMap.get(quad.subject.value)!['trackId'] = quad.object.value;
+        } else if(quad.predicate.value === this.LABEL) {
+            // Make sure the node exists in ID map
+            this.getNumericId(quad.subject.value, this.nodeIdMap);
+            // Store general label in the ID map
+            this.nodeIdMap.get(quad.subject.value)!['label'] = quad.object.value;
+        } else if(quad.predicate.value === this.PREFLABEL) {
+            // Make sure the node exists in ID map
+            this.getNumericId(quad.subject.value, this.nodeIdMap);
+            // Store OP type URI in the ID map
+            this.nodeIdMap.get(quad.subject.value)!['opType'] = quad.object.value;
         }
+
         done();
     }
 
