@@ -1,7 +1,7 @@
 ### Multi-stage Docker image
 
 # STAGE 1: Start from a Node.js ready container
-FROM node:16 AS ERA2OSM
+FROM node:18 AS ERA2OSM
 # Create a new directory for app files
 RUN mkdir -p /opt/era2osm
 # Set working directory in the container
@@ -13,9 +13,10 @@ RUN npm install
 # Install envsub to parse environment variables at build time
 RUN npm install -g envsub
 # Define config variables
-ARG SPARQL_API
-# Example country for testing: http://publications.europa.eu/resource/authority/country/BEL
-ARG COUNTRIES
+ARG SPARQL_API=https://linked.ec-dataplatform.eu/sparql?query=
+# Example countries for testing: 
+# http://publications.europa.eu/resource/authority/country/BEL,http://publications.europa.eu/resource/authority/country/NLD
+ARG COUNTRIES=http://publications.europa.eu/resource/authority/country/BEL
 # Parse env variables and build app
 RUN envsub ./src/config.ts
 RUN npm run build
@@ -24,25 +25,6 @@ RUN npm start
 
 # STAGE 2: Start from OSRM ready container
 FROM osrm/osrm-backend:v5.25.0
-
-ARG BUILD_DATE
-
-LABEL project="era2osm"
-LABEL maintainer="Julian"
-LABEL email="julianandres.rojasmelendez@ugent.be"
-LABEL documentation="https://git.fpfis.eu/xxxxxx/xxxxx"
-LABEL license="EUPL-1.2"
-
-# http://label-schema.org/rc1/ for more details
-LABEL org.label-schema.schema-version="1.0.0"
-LABEL org.label-schema.build-date=$BUILD_DATE
-LABEL org.label-schema.name="era2osm"
-LABEL org.label-schema.description="era2osm docker image used in ERA projects"
-LABEL org.label-schema.usage="https://git.fpfis.eu/xxxxxx/xxxxx"
-LABEL org.label-schema.url="https://git.fpfis.eu/xxxxxx/xxxxx"
-LABEL org.label-schema.vcs-url="https://git.fpfis.eu/xxxxxx/xxxxx"
-LABEL org.label-schema.version="1.2.3"
-
 # Install Node.js v16
 RUN apt-get update; apt-get install -y curl \
     && curl -fsSL https://deb.nodesource.com/setup_16.x | bash - \

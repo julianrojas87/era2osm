@@ -78,7 +78,10 @@ export class ERA2OSM extends Transform {
                         { '@ref': this.getNumericId(quad.subject.value, this.nodeIdMap) },
                         { '@ref': this.getNumericId(quad.object.value, this.nodeIdMap) }
                     ],
-                    tag: { '@k': 'highway', '@v': 'unclassified' }
+                    tag: [
+                        { '@k': 'highway', '@v': 'unclassified' },
+                        { '@k': 'oneway', '@v': 'yes' }
+                    ],
                 }
             });
         } else if(quad.predicate.value === this.IMPL) {

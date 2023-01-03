@@ -19,7 +19,7 @@ export type OSMWay = {
         '@version': number,
         '@timestamp': string,
         nd: Array<{ '@ref': string }>,
-        tag: { '@k': string, '@v': string }
+        tag: Array<{ '@k': string, '@v': string }>
     }
 }
 
