@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# Run an HTTP server to serve ID map file
+# Run the HTTP API that translates OSRM IDs to ERA URIs
 cd /opt/era2osm/dist/server
-ls
 node index.js &
 
 # Start OSRM routing engine
