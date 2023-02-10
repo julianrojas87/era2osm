@@ -13,7 +13,7 @@ RUN npm install
 # Install envsub to parse environment variables at build time
 RUN npm install -g envsub
 # Define config variables
-ARG SPARQL_API=https://http://10.2.32.149:8890/sparql?query=
+ARG SPARQL_API=http://10.2.32.149:8890/sparql?query=
 # Example countries for testing: 
 # http://publications.europa.eu/resource/authority/country/BEL,http://publications.europa.eu/resource/authority/country/NLD
 ARG COUNTRIES
