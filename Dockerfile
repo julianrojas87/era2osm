@@ -25,6 +25,8 @@ RUN npm start
 
 # STAGE 2: Start from OSRM ready container
 FROM osrm/osrm-backend:v5.25.0
+# Hack to cope with Debian package manager change (https://lists.debian.org/debian-devel-announce/2023/03/msg00006.html)
+RUN echo "deb http://archive.debian.org/debian stretch main" > /etc/apt/sources.list
 # Install Node.js v16
 RUN apt-get update; apt-get install -y curl \
     && curl -fsSL https://deb.nodesource.com/setup_16.x | bash - \
